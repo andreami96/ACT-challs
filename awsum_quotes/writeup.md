@@ -153,3 +153,10 @@ Testing 30 runs gave a success rate of _~75%_.
 ## Hosting
 
 The challenge can be hosted on a system with the latest libc-2.31. The exploit does not make use of libc addresses.
+
+Compiled with gcc 7.5.0 (Ubuntu 18.04)
+
+```
+gcc -o awsum_quotes awsum_quotes.c
+```
+
