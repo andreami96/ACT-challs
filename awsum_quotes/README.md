@@ -44,6 +44,7 @@ gcc -o awsum_quotes awsum_quotes.c
      width="70%"/>
   </p>
 
+
 Well, that's unusual: at 0x994 there is a gadget that seems to be preparing the registers for the syscall _SYS_EXECVE_. Why should the program execute those instructions? Checking with Ghidra, we see that the instructions are not recognized by the disassembler and they are not reached by any flow of execution:
 
 <p align="center">
@@ -52,6 +53,7 @@ Well, that's unusual: at 0x994 there is a gadget that seems to be preparing the 
      width="70%"/>
   </p>
 
+
 The area of code in which the gadget resides is actually _padding code_ that the compiler adds so that the beginning of some functions are aligned at nibble level (4 bits). Normally in x64 this padding code is a [_multi-byte NOP_](https://stackoverflow.com/questions/25545470/long-multi-byte-nops-commonly-understood-macros-or-other-notation) (or a sequence of them):
 
 <p align="center">
@@ -59,6 +61,7 @@ The area of code in which the gadget resides is actually _padding code_ that the
      alt="multi-byte NOPs"
      width="70%" align="center"/>
   </p>
+
 
 In this case, the multi-byte NOP has been partially overwritten with the instructions of the gadget. That's interesting.
 
@@ -72,6 +75,7 @@ But wait, let's think about what we saw until now: somebody put instructions tha
      width="70%"/>
   </p>
 
+
 Ha-ha! Just before the bytes of the backdoor gadget there is another strange padding sequence. Disassembling those bytes we find:
 
 ```assembly
@@ -80,7 +84,7 @@ mov rsi, rdx
 jmp <+0x7>
 ```
 
-This small block jumps to the backdoor gadget, so they are actually a single magic gadget that pops everything that is needed to call _SYS_EXECVE_. With this gadget we will only need to somehow prepare the stack with a pointer to NULL (8 null bytes) and a pointer to the string "/bin/sh". The latter can be found in _.rodata_ because it is used as the author string for one of the default quotations.
+This small block jumps to the backdoor gadget, so they are actually a single magic gadget that pops everything that is needed to call _SYS_EXECVE_. With this gadget at disposal we only need to somehow prepare the stack with a pointer to NULL (8 null bytes) and a pointer to the string "/bin/sh". The latter can be found in _.rodata_ because it is used as the author string for one of the default quotations.
 
 At this point we have a clear idea of what to do: find some way to hijack the flow of the program and execute the magic gadget. Let's see what vulns we can find.
 
@@ -100,11 +104,12 @@ Let's look at the stack we get before sending our input:
      width="70%"/>
   </p>
 
+
 Highlighted in blue and green are the beginning of the text and author buffers, respectively. 
 
 Our end goal is to overwrite the __saved IP__ with the address of the magic gadget. Since the binary is PIE, a leak of the _.text_ section is needed in order to calculate that addres. Can we leak the saved IP? 
 
-Yes, but it's a bit convoluted. We can't leak it directly because the __canary__ would be modified in the process; then the program would exit before returning from `get_new_quote()`. What we can do is to leak the canary first, together with the __saved BP__, and only then, leak the saved IP.
+Yes, but it's a bit convoluted. We can't leak it directly because the __canary__ would be modified in the process and the program would exit before returning from `get_new_quote()`. What we can do is to leak the canary first, together with the __saved BP__, and _only then_, leak the saved IP.
 
 It's time to add some quotes.
 
@@ -116,11 +121,11 @@ The idea is to write enough bytes in the text buffer to reach the canary. We nee
 
 Since the program performs a substitution of the first `\n` (newline) character in the buffer with a null byte, we must make sure that also the newline byte `\x0a` is not in our buffer.
 
-__Can we?__ Well, the we control the payload of 0x58 + 1 bytes, so no problem for that, but don't forget that also the canary itself will be part of our buffer and we have no control on it whatsoever: it is a random number generated at the beginning of the execution. From now on we assume that the canary does not contain any newline or null characters, besides the least significant byte that is always `\x00`, as we said. We'll discuss the other case later. This reasoning applies for all the values that we will leak in this exploit. 
+__Can we?__ Well, the we control the payload of 0x58 + 1 bytes, so no problem for that, but don't forget that also the canary itself will be part of the printed stuff and we have no control on it whatsoever: it is a random number generated at the beginning of the execution. From now on we assume that the canary does not contain any newline or null characters (besides the least significant byte that is always `\x00`). We'll discuss the other case later. This reasoning applies also to the other values that we will leak during this exploit. 
 
-Together with the canary, the printf will print also the saved BP. It won't print further than that because the 2 most significant bytes of the saved BP are always `\x00`. 
+Together with the canary, the printf will also print the saved BP. It won't print further than that because the 2 most significant bytes of the saved BP are always `\x00`. 
 
-After the leak, we can restore the least significant byte of the canary with the overflow of the author buffer. This time the payload will be 0x78 + 1 bytes long, with the last byte set to `\x00`. This way the program won't detect any change on the canary upon return form `get_new_quote()`.
+After the leak, we can restore the least significant byte of the canary with an overflow in the author buffer. This time the payload will be 0x78 + 1 bytes long, with the last byte set to `\x00`. This way the program won't detect any change to the canary.
 
 #### Quote #2
 
@@ -131,7 +136,7 @@ At this point we know the canary and the saved BP. We can leak the saved IP foll
 1. write enough bytes to reach the value to leak (text buffer overflow)
 2. restore values on the stack to let the execution go on (author buffer overflow)
 
-For the first part 0x68 bytes are needed. For the second, we must restore both the canary and the saved BP.
+For the first part 0x68 bytes are needed. For the second one, we must restore both the canary and the saved BP.
 
 #### Quote #3
 
@@ -152,9 +157,11 @@ After sending a short author string, we get the shell.
 > cat flag
 ```
 
+
+
 ## Issues
 
-Throughout the exploit, we assumed that the leaked values didn't have any `\x00` or `\x0a` bytes. They are all random values: the __canary__ is random by implementation, the addresses of the stack (__saved BP__) and the .text segment (__saved IP__) are randomized by ASLR. There is nothing that can be done about that, that's why this exploit is not always succesful.
+Throughout the exploit we assumed that the leaked values didn't have any `\x00` or `\x0a` bytes. These values are all random: the __canary__ is random by implementation, the addresses of the stack (__saved BP__) and the .text segment (__saved IP__) are randomized by ASLR. There is nothing that can be done about that, that's why this exploit is not always succesful.
 
 Testing 30 runs gave a success rate of _~75%_.
 

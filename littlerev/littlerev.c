@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 
 	int isCorrect = 1;
 
-	if (argc != 1) {
+	if (argc != 2) {
 		putchar('*');
 		puts("Usage: ./littlerev PASSWORD");
 		return 1;
