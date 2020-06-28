@@ -44,7 +44,6 @@ gcc -o awsum_quotes awsum_quotes.c
      width="70%"/>
   </p>
 
-
 Well, that's unusual: at 0x994 there is a gadget that seems to be preparing the registers for the syscall _SYS_EXECVE_. Why should the program execute those instructions? Checking with Ghidra, we see that the instructions are not recognized by the disassembler and they are not reached by any flow of execution:
 
 <p align="center">
@@ -53,7 +52,6 @@ Well, that's unusual: at 0x994 there is a gadget that seems to be preparing the 
      width="70%"/>
   </p>
 
-
 The area of code in which the gadget resides is actually _padding code_ that the compiler adds so that the beginning of some functions are aligned at nibble level (4 bits). Normally in x64 this padding code is a [_multi-byte NOP_](https://stackoverflow.com/questions/25545470/long-multi-byte-nops-commonly-understood-macros-or-other-notation) (or a sequence of them):
 
 <p align="center">
@@ -61,7 +59,6 @@ The area of code in which the gadget resides is actually _padding code_ that the
      alt="multi-byte NOPs"
      width="70%" align="center"/>
   </p>
-
 
 In this case, the multi-byte NOP has been partially overwritten with the instructions of the gadget. That's interesting.
 
@@ -74,7 +71,6 @@ But wait, let's think about what we saw until now: somebody put instructions tha
      alt="new part of the gadget"
      width="70%"/>
   </p>
-
 
 Ha-ha! Just before the bytes of the backdoor gadget there is another strange padding sequence. Disassembling those bytes we find:
 
@@ -103,7 +99,6 @@ Let's look at the stack we get before sending our input:
      alt="stack layout"
      width="70%"/>
   </p>
-
 
 Highlighted in blue and green are the beginning of the text and author buffers, respectively. 
 
