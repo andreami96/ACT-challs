@@ -112,7 +112,7 @@ After setting __AL__ = 0x21 the program prints the characters of the real flag o
 
 - It's interesting to see that if the program is run with the full password `g1mm3fl4_plz!` as input, it doesn't print the flag. This is because of the checks at the beginning of the unpacked code where the second `ptrace` is used: they never allow for the flag to be printed. To get the flag, the registers must be set manually with gdb (or with a new .gdbinit).
 
-  In the exploit folder you can find `.gdbinit2_flag.txt`  that shows a .gdbinit script that makes the original binary print the flag without applying any patches to it.
+  In the exploit folder you can find `gdbinit2_flag.txt`  that shows a .gdbinit script that makes the original binary print the flag without applying any patches to it.
 
 - If you pay attention to the bytes of the packed code in the binary, you can actually see the password characters (!):
 
