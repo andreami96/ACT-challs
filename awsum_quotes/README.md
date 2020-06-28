@@ -18,7 +18,7 @@ The main menu allows the following operations:
 2. Show a specific quotation
 3. Add a new quotation to the collection
 
-During the inital setup, the program fills 5 out of the 8 elements available in the quotations array, so the user can add only 3 more quotations. If it tries to add more, the program will terminate. 
+During the inital setup, the program fills 5 out of the 8 elements available in the quotations array, so the user can add only 3 more quotations. If it tries to add more, the program terminates. 
 
 _Some of the default quotations may give small hints on the solution of the challenge._
 
