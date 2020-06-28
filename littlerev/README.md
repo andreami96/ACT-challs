@@ -119,18 +119,18 @@ After setting __AL__ = 0x21 the program prints the characters of the real flag o
   <p align="center">
   <img src="https://i.imgur.com/ZURXiIp.png"
        alt="password in plaintext"
-       width="70%"/>
+       width="50%"/>
     </p>
 
   This happens because the code is obscured by means of just a XOR with the password: some assembly instructions in the code may have a number of null bytes in their operands, so XORing them with flag bytes will leave the flag bytes unchanged.
   These are the specific instructions:
 
   ```
-  0x6010f6:	mov    ecx,0x0          # b9 00 00 00 00
-  0x6010fb:	mov    edx,0x1				  # ba 01 00 00 00
-  0x601100:	mov    esi,0x0          # be 00 00 00 00
-  0x601105:	mov    edi,0x0          # bf 00 00 00 00
-  0x60110a:	mov    eax,0x0          # b8 00 00 00 00
+  0x6010f6:	mov    ecx,0x0              # b9 00 00 00 00
+  0x6010fb:	mov    edx,0x1              # ba 01 00 00 00
+  0x601100:	mov    esi,0x0              # be 00 00 00 00
+  0x601105:	mov    edi,0x0              # bf 00 00 00 00
+  0x60110a:	mov    eax,0x0              # b8 00 00 00 00
   ```
 
   
