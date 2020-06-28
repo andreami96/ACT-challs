@@ -22,7 +22,7 @@ During the inital setup, the program fills 5 out of the 8 elements available in 
 
 _Some of the default quotations may give small hints on the solution of the challenge._
 
-#### Build
+### Build
 
 Compiled with gcc 7.5.0 (Ubuntu 18.04)
 
