@@ -1,6 +1,6 @@
 # awsum-quotes
 
-The program is a collection of quotations, each composed of two strings: the actual text of the quotation and the author.
+The program manages a collection of quotations, each composed of two strings: the actual text of the quotation and the author.
 
 The collection is implemented as a structure which contains:
 
