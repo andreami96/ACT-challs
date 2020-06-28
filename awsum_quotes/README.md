@@ -65,9 +65,9 @@ The area of code in which the gadget resides is actually _padding code_ that the
 
 In this case, the multi-byte NOP has been partially overwritten with the instructions of the gadget. That's interesting.
 
-Let's go back to the list of gadgets and see if there is everything we need to prepare the registers for the _SYS_EXECVE_: we need to set RAX, RDI, RSI and RDX. The gadget mentioned takes care of RDI and RAX, there is another gadget that pops RSI but there is nothing for RDX. RDX will point to the environment of the execve so it can't be a random value (the easiest way is to make it a pointer to NULL), but there is no gadget that gives us control over it. 
+Let's go back to the list of gadgets and see if there is everything we need to prepare the registers for the _SYS_EXECVE_: we need to set RAX, RDI, RSI and RDX. The gadget mentioned takes care of RDI and RAX, there is another gadget that pops RSI but there is nothing for RDX. RDX must point to the environment of the execve so it can't be a random value (the easiest way is to make it a pointer to NULL). From the gadgets available it seems that we can't control it. 
 
-But wait, let's think about what we saw until now: somebody put instructions that seem like a backdoor inside some padding code. Maybe there is other padding code that has been altered in the same fashion?
+But wait, let's think about what we saw until now: somebody put instructions that seem like a backdoor inside some padding code. Maybe there is other padding code that was altered in the same fashion?
 
 <p align="center">
 <img src="https://i.imgur.com/1tLyJLo.png"
