@@ -29,13 +29,13 @@ argv[1][12] == (uint)(byte)(DAT_006010d4 * DAT_006010c4 ^ 0xea)
 
 Each expression takes one byte from each of the two global arrays `DAT_006010d4` and `DAT_006010c4`, multiplies them together and then performs a XOR with a hardcoded value. The result is casted as byte and is checked against the n-th character of the inserted password. In total there are 13 expressions like this, so presumably the password must be 13 characters long. We'll discuss how to crack this password in a moment.
 
-#### Anti-debugging
+### Anti-debugging
 
 Before the big if condition we see that the function `ptrace` is called, followed by a check on its return value: if it returns __-1__ the program terminates. This is a common _anti-debugging technique_ because debuggers on Unix-like platforms use the `ptrace` syscall to control the process to be debugged and, by design, a process can be "ptraced" only by a single process. In this case, if we ran the program through gdb, the `ptrace` call at the beginning of _main_ would return the error value -1 and the execution would terminate, leaving us with little dynamic analysis options.
 
 Fortunately, this obstacle can be easily overcome by patching the binary with __NOP__ instructions in place of the problematic block. In this case we substitute all the bytes from 0x629 to 0x66d included _(offsets from ELF base)_ with the value `0x90`.
 
-#### Password cracking
+### Password cracking
 
 Now that we have a debuggable program, let's crack the password.
 
@@ -71,7 +71,7 @@ I see tree main paths:
 
 In the end, we obtain the password `g1mm3fl4g_plz`.
 
-#### Is this a packer?
+### Is this a packer?
 
 Running the program with the correct password we finally get inside the if statement. Here two functions are called, both of which are given argv[1] (_i.e._ the password we inserted) as an argument:
 
@@ -93,7 +93,7 @@ We want to see what happens when the checks are passed, so we step with gdb and 
 
 If eax is different from -1, the function doesn't jump to the end. Let's set it to 0 then and continue stepping with gdb.
 
-#### A new password
+### A new password
 
 The program now loads the loads the 14th character of the password and compares it to the value 0x21 (ASCII for `!`). If the character is different, it jumps to the end again.
 
