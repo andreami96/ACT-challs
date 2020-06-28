@@ -48,7 +48,7 @@ I see tree main paths:
 
    - _Manual:_ run gdb and step manually until the correct value is stored in a register, then print it as a character. Better than doing calculations manually but can still be tedious.
 
-   - _Automated with .gdbinit:_ gdb commands can be automated with a .gdbinit file. As an example, here are the commands for the first character of the password:
+   - _Automated:_ gdb commands can be automated with a .gdbinit file. As an example, here are the commands for the first character of the password:
 
      ```
      b *0x40069c
