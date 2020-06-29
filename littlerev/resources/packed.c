@@ -19,7 +19,7 @@ void fun(char* pwd) {
 		puts("Get out!");
 	} else {
 		if (pwd[13] == '!') {
-			// decrypt flag
+			// decrypt flag (OTP)
 			for(i = 0; i < FLAG_LEN; i++) {
 				putchar(flag_enc[OFFS_ENC + i] ^ flag_key[i]);
 			}
