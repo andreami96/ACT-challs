@@ -19,7 +19,7 @@ void fun(char* pwd) {
 		puts("Get out!");
 	} else {
 		if (pwd[13] == '!') {
-			// decipher one time pad encrypted flag
+			// decrypt flag
 			for(i = 0; i < FLAG_LEN; i++) {
 				putchar(flag_enc[OFFS_ENC + i] ^ flag_key[i]);
 			}
