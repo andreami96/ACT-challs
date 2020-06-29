@@ -6,7 +6,7 @@ The program must be launched with a second argument, that is the password to be 
 Usage: ./littlerev PASSWORD
 ```
 
-#### Build
+### Build
 
 Compiled with gcc 7.5.0 (Ubuntu 18.04)
 
