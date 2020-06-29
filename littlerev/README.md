@@ -42,6 +42,7 @@ Now that we have a debuggable program, let's crack the password.
 I see tree main paths:
 
 1. __Manual calculations__
+
    Naive approach: take all the values that are used in the expressions and calculate the result. It is surely doable, the characters are not too many but it is a pain and not elegant.
 
 2. __GDB assisted__
