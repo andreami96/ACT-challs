@@ -79,7 +79,7 @@ Running the program with the correct password we finally get inside the if state
 
 This means that the global array contains some packed code that gets unpacked only if we provide the correct password. Ok, so let's get to the point where the code has been unpacked and print the instructions with gdb.
 
-Inspecting the assembly, we see another call to ptrace. Wow, this program really doesn't want to be debugged. It performs two comparisons and, depending on the results:
+[Inspecting the assembly](https://github.com/andreami96/ACT-challs/blob/master/littlerev/exploit/unpacked.txt), we see another call to ptrace. Wow, this program really doesn't want to be debugged. It performs two comparisons and, depending on the results:
 
 - prints "Get out!" and jumps straight to the end of the function: CHECKS KO
 - does something else: CHECKS OK
